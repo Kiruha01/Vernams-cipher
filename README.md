@@ -60,6 +60,6 @@ requirements: `bs4` - BeautifulSoup4 - библиотека парсинга htm
 ## ver.py - Шифр Вермана
 Шифрует сообщение. `ver.py --help` для справки.
 
-requirements: `-`.
+requirements: `click`.
 
 > Windows and Linux 
