@@ -1,6 +1,27 @@
+import os
 import random
+import sys
 from time import time
 import click
+
+
+def encryptFile(input_file, key, output):
+    byte_in = input_file.read(1)
+    while byte_in:
+        new_key = random.randint(0, 256)
+        key.write(bytes([new_key]))
+        new_byte = bytes([ord(byte_in) ^ new_key])
+        output.write(new_byte)
+        byte_in = input_file.read(1)
+
+
+def decryptFile(input_file, key, output_file):
+    byte_in = input_file.read(1)
+    while byte_in:
+        new_key = key.read(1)
+        new_byte = bytes([ord(new_key) ^ ord(byte_in)])
+        output_file.write(new_byte)
+        byte_in = input_file.read(1)
 
 
 @click.group()
@@ -14,16 +35,9 @@ def process():
 @click.option("-o", "--output", type=click.Path(file_okay=True))
 def encode(seed, fileinput, output):
     inp = open(fileinput, 'rb')
-    out = open(output if output else fileinput+".dec", 'wb')
+    out = open(output if output else fileinput + ".dec", 'wb')
     outkey = open(output + '.key' if output else fileinput + '.dec.key', 'wb')
-    byte_in = inp.read(1)
-    while byte_in:
-        key = random.randint(0, 256)
-        outkey.write(chr(key).encode())
-        new_char = chr(ord(byte_in) ^ key).encode()
-        out.write(new_char)
-        byte_in = inp.read(1)
-
+    encryptFile(inp, outkey, out)
     outkey.close()
     out.close()
     inp.close()
@@ -31,18 +45,12 @@ def encode(seed, fileinput, output):
 
 @click.command()
 @click.option("-i", "--input", "fileinput", type=click.Path(exists=True, file_okay=True), required=True)
-@click.option("-k", "--key", type=click.Path(exists=True, file_okay=True))
+@click.option("-k", "--key", type=click.Path(exists=True, file_okay=True, dir_okay=True))
 def decode(fileinput, key):
     inp = open(fileinput, "rb")
     in_key = open(key if key else fileinput + '.key', 'rb')
     out = open(fileinput.split(".dec")[0], "wb")
-    byte_in = inp.read(1)
-    while byte_in:
-        key = in_key.read(1)
-        new_char = chr(ord(key) ^ ord(byte_in)).encode()
-        out.write(new_char)
-        byte_in = inp.read(1)
-
+    decryptFile(inp, in_key, out)
     out.close()
     inp.close()
     in_key.close()
