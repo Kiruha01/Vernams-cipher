@@ -6,9 +6,9 @@ import click
 
 
 def encryptFile(input_file, key, output):
-    output = \
-        output if os.path.isfile(output) else os.path.join(output, os.path.basename(input_file)) + '.dec'
-    key = key if os.path.isfile(key) else os.path.join(key, os.path.basename(input_file) + '.dec.key')
+    # output = \
+    #     output if os.path.isfile(output) else os.path.join(output, os.path.basename(input_file)) + '.dec'
+    # key = key if os.path.isfile(key) else os.path.join(key, os.path.basename(input_file) + '.dec.key')
     with open(input_file, 'rb') as inf, open(key, 'wb') as keyf, open(output, 'wb') as outf:
         byte_in = inf.read(1)
         while byte_in:
@@ -20,10 +20,10 @@ def encryptFile(input_file, key, output):
 
 
 def decryptFile(input_file, key, output_file):
-    output_file = output_file if os.path.isfile(output_file) else os.path.join(output_file,
-                                                                       os.path.basename(input_file).split('.dec')[0])
-    key = key if os.path.isfile(key) \
-        else os.path.join(key, os.path.basename(input_file) + '.key')
+    # output_file = output_file if os.path.isfile(output_file) else os.path.join(output_file,
+    #                                                                    os.path.basename(input_file).split('.dec')[0])
+    # key = key if os.path.isfile(key) \
+    #     else os.path.join(key, os.path.basename(input_file) + '.key')
 
     with open(input_file, 'rb') as inf, open(key, 'rb') as keyf, open(output_file, 'wb') as outf:
         byte_in = inf.read(1)
@@ -44,18 +44,21 @@ def process():
 @click.option("-i", "--input", "fileinput", type=click.Path(exists=True, file_okay=True, dir_okay=True))
 @click.option("-o", "--output", type=click.Path(file_okay=True, dir_okay=True))
 @click.option("-k", "--key", type=click.Path(file_okay=True, dir_okay=True))
-def encode(seed, fileinput, output, key):
-    if os.path.isfile(fileinput):  # decrypt one file
-        if not key:
-            key = os.path.dirname(fileinput)
+#@click.option("-f", "--folders", is_flag=True)
+def encode(seed, fileinput, output, key):#, folders):
+    if os.path.isfile(fileinput): # and not folders:  # work with one file
         if not output:
-            output = os.path.dirname(fileinput)
-        # output = \
-        #     output if os.path.isfile(output) else os.path.join(output, os.path.basename(fileinput)) + '.dec'
-        # key = key if os.path.isfile(key) else os.path.join(key, os.path.basename(fileinput) + '.dec.key')
+            output = fileinput + '.dec'
+        elif os.path.isdir(output):
+            output = os.path.join(output, os.path.basename(fileinput) + '.dec')
+        if not key:
+            key = output + '.key'
+        elif os.path.isdir(key):
+            key = os.path.join(key, os.path.basename(output) + '.key')
 
         encryptFile(fileinput, key, output)
-    else:
+
+    else:#if folders and os.path.isdir(fileinput):
         if not key:
             key = fileinput
         if not output:
@@ -67,7 +70,7 @@ def encode(seed, fileinput, output, key):
                 os.mkdir(output)
             for file in os.listdir(fileinput):
                 if os.path.isfile(os.path.join(fileinput, file)):
-                    encryptFile(os.path.join(fileinput, file), key, output)
+                    encryptFile(os.path.join(fileinput, file), os.path.join(key, file + '.dec.key'), os.path.join(output, file + '.dec'))
                 else:
                     print(file, 'is dir - skip')
 
@@ -76,27 +79,22 @@ def encode(seed, fileinput, output, key):
 @click.option("-i", "--input", "fileinput", type=click.Path(exists=True, file_okay=True), required=True)
 @click.option("-k", "--key", type=click.Path(exists=True, file_okay=True, dir_okay=True))
 @click.option("-o", "--output", type=click.Path(dir_okay=True, file_okay=True))
-def decode(fileinput, key, output):
-    # in - file:
-    #   key - file
-    #       out - file or dir
-    #   key - dir:
-    #       key = key + in.file
-    #       out - file or dir
-    # in - dir:
-    #   key - dir:
-    #       out - dir
-    # else: error
+#@click.option("-f", "--folders", is_flag=True)
+def decode(fileinput, key, output):#, folders):
 
-    if os.path.isfile(fileinput):  # decrypt one file
+    if os.path.isfile(fileinput):# and not folders:  # work with many files
         if not key:
-            key = os.path.dirname(fileinput)
+            key = fileinput + '.key'
+        elif os.path.isdir(key):
+            key = os.path.join(key, fileinput + '.key')
         if not output:
-            output = os.path.dirname(fileinput)
+            output = fileinput.split('.dec')
+        elif os.path.isdir(output):
+            output = os.path.join(output, fileinput.split('.dec'))
 
         decryptFile(fileinput, key, output)
 
-    else:
+    else:#if folders and os.path.isdir(fileinput)::
         if not os.path.exists(output):
             os.mkdir(output)
         if not key:
