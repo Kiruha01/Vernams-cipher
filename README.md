@@ -59,6 +59,21 @@ requirements: `bs4` - BeautifulSoup4 - библиотека парсинга htm
 
 ## ver.py - Шифр Вермана
 Шифрует сообщение. `ver.py --help` для справки.
+Использование:
+```bash 
+$ ver.py encrypt -i data -o data.out
+```
+Шифрование файла `data`. Ключ `data.out.key` сохраняется в той же директории, выходной файл - `data.out`
+
+```bash
+$ ver.py decrypt -i data.out -k key.data -o data
+```
+Расшифровка файла `data.out` ключом `key.data` и вывод в файл `data`.
+
+```bash
+$ ver.py encrypt foo/ -k keys/ -o outs/
+```
+Шифровка всех файлов в папке `foo`. Ключи сохраняются в `keys` в формате `file.dec.key`, а вывод в `out/file.dec`.
 
 requirements: `click`.
 

@@ -30,15 +30,37 @@ def decryptFile(input_file, key, output_file):
 
 @click.group()
 def process():
+    """Encrypting and decrypting files via Vernam`s algorithm.
+    Using XOR operation with each bytes.
+
+    After encrypting you get encrypted file *.dec and key
+    *.dec.key. Key is a secure information.
+
+    To decrypt you should give decrypted and key files."""
     pass
 
 
 @click.command()
-@click.option("-s", "--seed", type=click.INT)
-@click.option("-i", "--input", "fileinput", type=click.Path(exists=True, file_okay=True, dir_okay=True))
-@click.option("-o", "--output", type=click.Path(file_okay=True, dir_okay=True))
-@click.option("-k", "--key", type=click.Path(file_okay=True, dir_okay=True))
-def encode(seed, fileinput, output, key):
+@click.option("-s", "--seed", type=click.INT, help="Seed of random")
+@click.option("-i", "--input", "fileinput", type=click.Path(exists=True, file_okay=True, dir_okay=True),
+              help="Source of input files. File or folder")
+@click.option("-o", "--output", type=click.Path(file_okay=True, dir_okay=True), help="Source of output file. File or "
+                                                                                     "folder (if input is folder - "
+                                                                                     "folder only!) ")
+@click.option("-k", "--key", type=click.Path(file_okay=True, dir_okay=True),
+              help="Source of key files. File or folder (if input is folder - folder only!)")
+def encrypt(seed, fileinput, output, key):
+    """
+    input - file of folder
+
+    If input is file:
+        key - path to file or existing folder containing a secure key
+        output - path to encrypted file or existing folder containing one
+    If input is folder:
+        key - path to folder containing a secure key
+        output - path to folder containing encrypted file
+    """
+    random.seed(seed)
     if os.path.isfile(fileinput):  # and not folders:  # work with one file
         if not output:
             output = fileinput + '.dec'
@@ -77,11 +99,20 @@ def encode(seed, fileinput, output, key):
 
 
 @click.command()
-@click.option("-i", "--input", "fileinput", type=click.Path(exists=True, file_okay=True), required=True)
-@click.option("-k", "--key", type=click.Path(exists=True, file_okay=True, dir_okay=True))
-@click.option("-o", "--output", type=click.Path(dir_okay=True, file_okay=True))
-def decode(fileinput, key, output):
+@click.option("-i", "--input", "fileinput", type=click.Path(exists=True, file_okay=True), required=True,
+              help="Source of input encrypted filed. File of folder")
+@click.option("-k", "--key", type=click.Path(exists=True, file_okay=True, dir_okay=True),
+              help="Source of keys. File or folder (if input is folder - folder only!)")
+@click.option("-o", "--output", type=click.Path(dir_okay=True, file_okay=True),
+              help="Source of output decrypted files. File of folder (if input is folder - folder only!)")
+def decrypt(fileinput, key, output):
+    """
+    input - file of folder
 
+    If input is file:
+        key - path to an existing decrypted file of folder
+        output - path to output file of folder
+    """
     if os.path.isfile(fileinput):
         if not key:
             key = fileinput + '.key'
@@ -105,7 +136,8 @@ def decode(fileinput, key, output):
         if not os.path.exists(output):
             os.mkdir(output)
         if not os.path.isfile(key) and not os.path.isfile(output):  # decrypt many files
-            for file in os.listdir(fileinput):
+            files = os.listdir(fileinput)
+            for file in files:
                 if os.path.isfile(os.path.join(fileinput, file)):
                     key_file = os.path.join(key, file + '.key')
                     output_file = os.path.join(output, file.split('.dec')[0])
@@ -118,8 +150,8 @@ def decode(fileinput, key, output):
                     print(file, 'is dir - SKIP')
 
 
-process.add_command(encode)
-process.add_command(decode)
+process.add_command(encrypt)
+process.add_command(decrypt)
 
 # print('''
 #                     oooooo     oooo
