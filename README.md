@@ -61,14 +61,14 @@ requirements: `bs4` - BeautifulSoup4 - библиотека парсинга htm
 Шифрует сообщение. `ver.py --help` для справки.
 Использование:
 ```bash 
-$ ver.py encrypt -i data -o data.out
+$ ver.py encrypt -i data [-o data.dec] [-k data.dec.key]
 ```
-Шифрование файла `data`. Ключ `data.out.key` сохраняется в той же директории, выходной файл - `data.out`
+Шифрование файла `data`. Ключ `data.dec.key` сохраняется в той же директории, выходной файл - `data.dec`
 
 ```bash
-$ ver.py decrypt -i data.out -k key.data -o data
+$ ver.py decrypt -i data.dec [-k data.dec.key] [-o data]
 ```
-Расшифровка файла `data.out` ключом `key.data` и вывод в файл `data`.
+Расшифровка файла `data.dec` ключом `data.dec.key` и вывод в файл `data`.
 
 ```bash
 $ ver.py encrypt foo/ -k keys/ -o outs/
