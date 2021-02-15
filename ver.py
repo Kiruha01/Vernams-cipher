@@ -33,7 +33,7 @@ def process():
     """Encrypting and decrypting files via Vernam`s algorithm.
     Using XOR operation with each bytes.
 
-    After encrypting you get encrypted file *.dec and key
+    After encrypting you will get encrypted file *.dec and key
     *.dec.key. Key is a secure information.
 
     To decrypt you should give decrypted and key files."""
@@ -44,21 +44,14 @@ def process():
 @click.option("-s", "--seed", type=click.INT, help="Seed of random")
 @click.option("-i", "--input", "fileinput", type=click.Path(exists=True, file_okay=True, dir_okay=True),
               help="Source of input files. File or folder")
-@click.option("-o", "--output", type=click.Path(file_okay=True, dir_okay=True), help="Source of output file. File or "
-                                                                                     "folder (if input is folder - "
+@click.option("-o", "--output", type=click.Path(file_okay=True, dir_okay=True), help="Destination of output file. File "
+                                                                                     "or folder (if input is folder - "
                                                                                      "folder only!) ")
 @click.option("-k", "--key", type=click.Path(file_okay=True, dir_okay=True),
-              help="Source of key files. File or folder (if input is folder - folder only!)")
+              help="Destination of key files. File or folder (if input is folder - folder only!)")
 def encrypt(seed, fileinput, output, key):
     """
-    input - file of folder
-
-    If input is file:
-        key - path to file or existing folder containing a secure key
-        output - path to encrypted file or existing folder containing one
-    If input is folder:
-        key - path to folder containing a secure key
-        output - path to folder containing encrypted file
+    Encrypting files
     """
     random.seed(seed)
     if os.path.isfile(fileinput):  # and not folders:  # work with one file
@@ -104,14 +97,10 @@ def encrypt(seed, fileinput, output, key):
 @click.option("-k", "--key", type=click.Path(exists=True, file_okay=True, dir_okay=True),
               help="Source of keys. File or folder (if input is folder - folder only!)")
 @click.option("-o", "--output", type=click.Path(dir_okay=True, file_okay=True),
-              help="Source of output decrypted files. File of folder (if input is folder - folder only!)")
+              help="Destination of output decrypted files. File of folder (if input is folder - folder only!)")
 def decrypt(fileinput, key, output):
     """
-    input - file of folder
-
-    If input is file:
-        key - path to an existing decrypted file of folder
-        output - path to output file of folder
+    Decrypt files
     """
     if os.path.isfile(fileinput):
         if not key:
@@ -119,7 +108,7 @@ def decrypt(fileinput, key, output):
         elif os.path.isdir(key):
             key = os.path.join(key, fileinput + '.key')
         if not output:
-            output = fileinput.split('.dec')
+            output = fileinput.split('.dec')[0]
         elif os.path.isdir(output):
             output = os.path.join(output, fileinput.split('.dec')[0])
         try:
