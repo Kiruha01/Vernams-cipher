@@ -36,7 +36,7 @@ $ ./ver.py encrypt -i data [-o data.dec] [-k data.dec.key]
 ```bash
 $ ./ver.py encrypt -i folder/ [-k keys/] [-o outs]
 ```
-## Decrypt
+### Decrypt
 
 |    Параметр   | Описание                                                 |
 |---------------|----------------------------------------------------------|
