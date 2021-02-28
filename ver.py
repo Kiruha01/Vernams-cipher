@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import random
 import click
@@ -30,13 +31,16 @@ def decryptFile(input_file, key, output_file):
 
 @click.group()
 def process():
-    """Encrypting and decrypting files via Vernam`s algorithm.
+    """
+    Vernam's algorithm. Version v1.0
+
+    Encrypting and decrypting files via Vernam`s algorithm.
     Using XOR operation with each bytes.
 
-    After encrypting you will get encrypted file *.dec and key
-    *.dec.key. Key is a secure information.
+    After encryption, you will receive an encrypted (*.dec) 
+    and a key (*.dec.key) files. The key is secret information.
 
-    To decrypt you should give decrypted and key files."""
+    For decryption, you must give the decrypted and key files."""
     pass
 
 
@@ -51,7 +55,7 @@ def process():
               help="Destination of key files. File or folder (if input is folder - folder only!)")
 def encrypt(seed, fileinput, output, key):
     """
-    Encrypting files
+    Encrypt files
     """
     random.seed(seed)
     if os.path.isfile(fileinput):  # and not folders:  # work with one file
@@ -142,17 +146,7 @@ def decrypt(fileinput, key, output):
 process.add_command(encrypt)
 process.add_command(decrypt)
 
-# print('''
-#                     oooooo     oooo
-#                     `888.     .8'
-#                      `888.   .8'    .ooooo.  oooo d8b ooo. .oo.    .oooo.   ooo. .oo.  .oo.
-#                       `888. .8'    d88' `88b `888""8P `888P"Y88b  `P  )88b  `888P"Y88bP"Y88b
-#                        `888.8'     888ooo888  888      888   888   .oP"888   888   888   888
-#                         `888'      888    .o  888      888   888  d8(  888   888   888   888
-#                          `8'       `Y8bod8P' d888b    o888o o888o `Y888""8o o888o o888o o888o
-#
-#
-#         ''')
+
 
 if __name__ == "__main__":
     process()
