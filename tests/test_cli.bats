@@ -53,7 +53,7 @@ load bats_helpers
 }
 
 @test "Encrypt dir" {
-  skip "key1 is diff"
+  # skip "key1 is diff"
   ./create_directories.sh
   run python ../ver.py encrypt -i inputs -o out_test -k key_test -s 1
   [ "$status" -eq 0 ]
